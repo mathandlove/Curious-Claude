@@ -1,34 +1,38 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import PromptForm from './components/PromptForm'
+import { sendPromptToClaude } from './api/claude'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [loading, setLoading] = useState(false)
+  const [response, setResponse] = useState('')
+  const [error, setError] = useState<string | null>(null)
+
+  const handleSubmit = async (prompt: string) => {
+    setLoading(true)
+    setError(null)
+    setResponse('')
+
+    try {
+      const result = await sendPromptToClaude(prompt)
+      setResponse(result.response)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div className="app">
+      <h1>Claude Chat Interface</h1>
+      <PromptForm
+        onSubmit={handleSubmit}
+        loading={loading}
+        response={response}
+        error={error}
+      />
+    </div>
   )
 }
 
