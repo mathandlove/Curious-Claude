@@ -36,6 +36,7 @@ export default function Home() {
     // This will be handled by PromptForm - we'll pass the suggested prompt to it
     console.log('Try prompt:', prompt);
     setShowSuggestionBanner(false); // Hide the banner after trying a prompt
+    setBannerDismissed(true); // Mark banner as permanently dismissed
   };
 
   const handleBannerHide = () => {
