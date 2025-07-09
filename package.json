@@ -3,7 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "workspaces": [".", "backend"],
+  "workspaces": [
+    ".",
+    "backend"
+  ],
   "scripts": {
     "dev": "vite",
     "dev:backend": "pnpm --filter backend dev",
