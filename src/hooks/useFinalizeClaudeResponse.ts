@@ -1,5 +1,5 @@
 // src/hooks/useFinalizeClaudeResponse.ts
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import type { Message } from '../../shared/messageTypes';
 
 
@@ -24,10 +24,8 @@ export function useFinalizeClaudeResponse({
   bannerDismissed,
   setShowSuggestionBanner,
 }: UseFinalizeClaudeResponseProps) {
-  useEffect(() => {
+  const handleFinalize = useCallback(() => {
     if (pendingClaudeResponse && readyToShowClaudeResponse) {
-
-      
       setConversation(prev => {
         const updated = [...prev];
         const lastMessage = updated[updated.length - 1];
@@ -44,5 +42,17 @@ export function useFinalizeClaudeResponse({
         setTimeout(() => setShowSuggestionBanner(true), 50);
       }
     }
-  }, [pendingClaudeResponse, readyToShowClaudeResponse]);
+  }, [
+    pendingClaudeResponse,
+    readyToShowClaudeResponse,
+    setConversation,
+    setPendingClaudeResponse,
+    setLoading,
+    bannerDismissed,
+    setShowSuggestionBanner,
+  ]);
+
+  useEffect(() => {
+    handleFinalize();
+  }, [handleFinalize]);
 }

@@ -27,7 +27,6 @@ export default function Home() {
   const [pendingClaudeResponse, setPendingClaudeResponse] = useState<string | null>(null);
   const [readyToShowClaudeResponse, setReadyToShowClaudeResponse] = useState<boolean | null>(null);
   const [instructions, setInstructions] = useState<string | null>(null);
-  const [external, setExternal] = useState<string | null>(null);
   const [advancedPrompt, setAdvancedPrompt] = useState<string | null>(null);
     const [localAdvancedPrompt, setLocalAdvancedPrompt] = useState<string | null>(null);
   const [loadingAdvancedPrompt, setLoadingAdvancedPrompt] = useState(false);
@@ -137,9 +136,8 @@ const handleSubmit = async (submittedPrompt: string) => {
 const response = await postToClaude<AnalyzePromptResponse>('analyze-prompt', {
   prompt: submittedPrompt,
 });
-      const [instructions, external] = response.promptInstructions;
+      const [instructions] = response.promptInstructions;
       setInstructions(instructions);
-      setExternal(external);
       setDynamicGoals(response.goals);
       // setExternalSummary(external); // if needed later
       setShowGoalPrompt(true);

@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
 import { generateResponse, generateResponseWithConversation, generateShortGoalDescription, getInstructionsAnd3GoalsFromPrompt, generateAdvancedPrompt } from './claudeService';
-import type { AdvancedLearningPrompt, AnalyzePromptResponse, ClaudeTextResponse, ShortGoalDescription, ConversationRequest } from '../../shared/claudeTypes';
+import type { AdvancedLearningPrompt, AnalyzePromptResponse, ClaudeTextResponse, ShortGoalDescription } from '../../shared/claudeTypes';
 import type { Message } from '../../shared/messageTypes';  
 import path from 'path';
 
@@ -46,9 +46,10 @@ app.post(
 
       // ✅ Align with ClaudeTextResponse { content: string }
     res.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error in /api/claude:', error);
-      res.status(500).json({ error: error?.message || 'Failed to get response from Claude' });
+      const message = error instanceof Error ? error.message : 'Failed to get response from Claude';
+      res.status(500).json({ error: message });
     }
   }
 );
@@ -69,9 +70,10 @@ app.post(
 
       const result = await generateResponseWithConversation(conversation);
       res.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error in /api/claude-conversation:', error);
-      res.status(500).json({ error: error?.message || 'Failed to get response from Claude' });
+      const message = error instanceof Error ? error.message : 'Failed to get response from Claude';
+      res.status(500).json({ error: message });
     }
   }
 );
@@ -92,9 +94,10 @@ app.post(
 
       const result = await getInstructionsAnd3GoalsFromPrompt(prompt);
       res.json(result);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error in /api/analyze-prompt:', error);
-      res.status(500).json({ error: error?.message || 'Failed to analyze prompt' });
+      const message = error instanceof Error ? error.message : 'Failed to analyze prompt';
+      res.status(500).json({ error: message });
     }
   }
 );
@@ -113,9 +116,10 @@ app.post('/api/get-short-goal', async (req: Request, res: Response<ShortGoalDesc
     }
 
     res.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error in /api/get-short-goal:', error);
-    res.status(500).json({ error: error?.message || 'Failed to shorten goal' });
+    const message = error instanceof Error ? error.message : 'Failed to shorten goal';
+    res.status(500).json({ error: message });
   }
 });
 
@@ -142,11 +146,10 @@ app.post(
       }
 
       res.json( result );
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error in /api/get-professional-prompt:', error);
-      res
-        .status(500)
-        .json({ error: error?.message || 'Failed to generate prompt' });
+      const message = error instanceof Error ? error.message : 'Failed to generate prompt';
+      res.status(500).json({ error: message });
     }
   }
 );

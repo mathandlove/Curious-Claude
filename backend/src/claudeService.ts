@@ -1,9 +1,8 @@
-import {
+import type {
   AnalyzePromptResponse,
   AdvancedLearningPrompt,
   ShortGoalDescription,
   ClaudeTextResponse,
-  ConversationRequest,
 } from '../../shared/claudeTypes';
 import type { Message } from '../../shared/messageTypes';
 import Anthropic from '@anthropic-ai/sdk';
@@ -168,7 +167,7 @@ try {
       throw new Error('Claude returned malformed prompt');
     }
     return { prompt: parsed.prompt };
-  } catch (err) {
+  } catch {
     console.error('Failed to parse Claude response:', rawText);
     throw new Error('Claude did not return valid JSON');
   }
@@ -246,7 +245,8 @@ Goal: ${selectedGoal}`,
 
       const content = response.content[0];
       if (content.type === "text") {
-        return parseClaudeJSON(content.text);
+        const result = parseClaudeJSON(content.text) as unknown as ShortGoalDescription;
+        return result;
       }
       throw new Error("Invalid response format");
     } catch (error) {
@@ -255,7 +255,7 @@ Goal: ${selectedGoal}`,
     }
   }
 
-export function parseClaudeJSON(text: string): any {
+export function parseClaudeJSON(text: string): Record<string, unknown> {
   let cleanText = '';
   try {
     cleanText = text.trim();
@@ -274,7 +274,7 @@ export function parseClaudeJSON(text: string): any {
     const normalized = jsonText.replace(/"\s*:\s*"/g, '": "');
 
     return JSON.parse(normalized);
-  } catch (error) {
+  } catch {
     console.error('❌ Failed to parse Claude JSON');
     console.error('Raw text:', text);
     console.error('Cleaned text:', cleanText);

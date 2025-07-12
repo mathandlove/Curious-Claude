@@ -1,7 +1,10 @@
 // src/hooks/useScrollToBottom.ts
 import { useEffect } from 'react';
 
-export function useScrollToBottom(ref: React.RefObject<HTMLDivElement | null>, deps: any[] = []) {
+export function useScrollToBottom(
+  ref: React.RefObject<HTMLDivElement | null>, 
+  deps: React.DependencyList = []
+) {
   useEffect(() => {
     if (ref.current) {
       ref.current.scrollTo({
@@ -9,5 +12,6 @@ export function useScrollToBottom(ref: React.RefObject<HTMLDivElement | null>, d
         behavior: 'smooth',
       });
     }
-  }, deps);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref, ...deps]);
 }

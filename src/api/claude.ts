@@ -8,7 +8,7 @@ export interface ClaudeError {
 // Generic POST helper
 export async function postToClaude<TResponse>(
   route: string,
-  body: any
+  body: Record<string, unknown>
 ): Promise<TResponse> {
   const response = await fetch(`${API_BASE_URL}/api/${route}`, {
     method: 'POST',
@@ -23,7 +23,7 @@ export async function postToClaude<TResponse>(
     try {
       const errorData: ClaudeError = await response.json();
       errorText = errorData.error || errorText;
-    } catch (e) {
+    } catch {
       errorText = await response.text();
     }
     throw new Error(`Claude API error: ${response.status} - ${errorText}`);
