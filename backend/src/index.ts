@@ -7,6 +7,14 @@ import type { AdvancedLearningPrompt, AnalyzePromptResponse, ClaudeTextResponse,
 import type { Message } from '../../shared/messageTypes';  
 import path from 'path';
 
+const allowedOrigins = [
+  'https://curious-claude-8kzt36usl-elliott-hedmans-projects.vercel.app',
+  'http://localhost:5173' // optional, for local dev
+];
+
+
+
+
 const app = express();
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../frontend/dist')));
@@ -14,6 +22,13 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
   });
 }
+
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ['GET', 'POST'],
+  credentials: true
+}));
 
 dotenv.config();
 
