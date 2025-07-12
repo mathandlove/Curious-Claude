@@ -1,25 +1,32 @@
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export interface ClaudeResponse {
-  response: string;
-}
 
 export interface ClaudeError {
   error: string;
 }
 
-export async function sendPromptToClaude(prompt: string): Promise<ClaudeResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/claude`, {
+// Generic POST helper
+export async function postToClaude<TResponse>(
+  route: string,
+  body: any
+): Promise<TResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/${route}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {
-    const errorData: ClaudeError = await response.json();
-    throw new Error(errorData.error || 'Failed to get response from Claude');
+    let errorText = 'Failed to fetch';
+    try {
+      const errorData: ClaudeError = await response.json();
+      errorText = errorData.error || errorText;
+    } catch (e) {
+      errorText = await response.text();
+    }
+    throw new Error(`Claude API error: ${response.status} - ${errorText}`);
   }
 
   return response.json();

@@ -23,22 +23,24 @@ export default function PromptSuggestionBanner({
     onBookmark(suggestedPrompt);
   };
 
-  return (
-    <div className={`transition-all duration-700 ease-in-out transform ${
-      visible ? '-translate-y-[72px] opacity-100 pointer-events-auto' : 'translate-y-0 opacity-0 pointer-events-none'
-    }`}>
-      <div className="inline-flex items-center rounded-lg bg-[#2a2a2a] px-4 py-3 shadow-md w-auto mx-5 mt-4 mb-2">
-        <div className="flex items-center gap-8">
-          <p className="text-white text-sm flex items-center gap-1">
-            <span>
-              Found prompt to help with{' '}
-              <span className="text-[#8f4733] font-semibold">
-                {learningGoal}
-              </span>
-              .
-            </span>
+ return (
+    <div
+      className={`transition-all duration-500 ease-in-out transform max-w-4xl mx-auto mr-[5%] ${
+        visible
+          ? 'opacity-100 scale-100 translate-y-4'
+          : 'opacity-0 scale-95 translate-y-10 pointer-events-none'
+      }`}
+    >
+      <div className="rounded-lg bg-[#2a2a2a] px-4 py-3 shadow-md w-full max-w-2xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          {/* Prompt Text */}
+          <p className="text-white text-sm">
+            Found prompt to help with{' '}
+            <span className="text-[#8f4733] font-semibold">{learningGoal}</span>.
           </p>
-          <div className="flex gap-2">
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-2 self-start sm:self-auto">
             <button
               onClick={() => onTryPrompt(suggestedPrompt)}
               className="whitespace-nowrap bg-[#8f4733] hover:bg-[#7a3e2b] text-white px-4 py-1 rounded-md text-sm transition-colors duration-200"
@@ -49,10 +51,10 @@ export default function PromptSuggestionBanner({
               onClick={handleBookmark}
               className="bg-transparent hover:bg-gray-700 px-2 py-1 rounded-md text-sm transition-colors duration-200 cursor-pointer active:scale-90"
             >
-              <Bookmark 
-                className={`h-6 w-6 transition-all duration-200 ${
-                  bookmarked 
-                    ? 'fill-[#8f4733] text-[#8f4733]' 
+              <Bookmark
+                className={`h-5 w-5 transition-all duration-200 ${
+                  bookmarked
+                    ? 'fill-[#8f4733] text-[#8f4733]'
                     : 'text-[#8f4733] hover:text-orange-400'
                 }`}
               />
@@ -62,5 +64,7 @@ export default function PromptSuggestionBanner({
       </div>
     </div>
   );
+
+
 
 }

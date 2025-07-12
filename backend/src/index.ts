@@ -1,47 +1,159 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import Anthropic from '@anthropic-ai/sdk';
+import type { Request, Response } from 'express';
+import { generateResponse, generateResponseWithConversation, generateShortGoalDescription, getInstructionsAnd3GoalsFromPrompt, generateAdvancedPrompt } from './claudeService';
+import type { AdvancedLearningPrompt, AnalyzePromptResponse, ClaudeTextResponse, ShortGoalDescription, ConversationRequest } from '../../shared/claudeTypes';
+import type { Message } from '../../shared/messageTypes';  
+import path from 'path';
+
+const app = express();
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (_, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
+}
 
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+
+const PORT = Number(process.env.PORT) || 3001;
 
 app.use(cors());
 app.use(express.json());
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+// Health check endpoint
+app.get('/health', (_req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-app.post('/api/claude', async (req, res) => {
-  try {
-    const { prompt } = req.body;
+// Basic Claude completion endpoint
+app.post(
+  '/api/claude',
+  async (
+    req: Request<unknown, ClaudeTextResponse, { prompt?: string }>,
+    res: Response<ClaudeTextResponse | { error: string }>
+  ) => {
+    try {
+      const { prompt } = req.body;
 
-    if (!prompt) {
-      return res.status(400).json({ error: 'Prompt is required' });
+      if (!prompt) {
+        return res.status(400).json({ error: 'Prompt is required' });
+      }
+
+      const result = await generateResponse(prompt);
+
+      // ✅ Align with ClaudeTextResponse { content: string }
+    res.json(result);
+    } catch (error: any) {
+      console.error('Error in /api/claude:', error);
+      res.status(500).json({ error: error?.message || 'Failed to get response from Claude' });
+    }
+  }
+);
+
+// Conversation-based Claude completion endpoint
+app.post(
+  '/api/claude-conversation',
+  async (
+    req: Request<unknown, ClaudeTextResponse, { conversation?: Message[] }>,
+    res: Response<ClaudeTextResponse | { error: string }>
+  ) => {
+    try {
+      const { conversation } = req.body;
+
+      if (!conversation || !Array.isArray(conversation) || conversation.length === 0) {
+        return res.status(400).json({ error: 'Conversation array is required' });
+      }
+
+      const result = await generateResponseWithConversation(conversation);
+      res.json(result);
+    } catch (error: any) {
+      console.error('Error in /api/claude-conversation:', error);
+      res.status(500).json({ error: error?.message || 'Failed to get response from Claude' });
+    }
+  }
+);
+
+//passes in prompt and returns external content and 3 goals
+app.post(
+  '/api/analyze-prompt',
+  async (
+    req: Request<unknown, AnalyzePromptResponse, { prompt?: string }>,
+    res: Response<AnalyzePromptResponse | { error: string }>
+  ) => {
+    try {
+      const { prompt } = req.body;
+
+      if (!prompt) {
+        return res.status(400).json({ error: 'Prompt is required' });
+      }
+
+      const result = await getInstructionsAnd3GoalsFromPrompt(prompt);
+      res.json(result);
+    } catch (error: any) {
+      console.error('Error in /api/analyze-prompt:', error);
+      res.status(500).json({ error: error?.message || 'Failed to analyze prompt' });
+    }
+  }
+);
+
+app.post('/api/get-short-goal', async (req: Request, res: Response<ShortGoalDescription | { error: string }>) => {
+  try {
+    const { goal } = req.body;
+
+    if (!goal) {
+      return res.status(400).json({ error: 'Goal is required' });
     }
 
-    const message = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 1024,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    });
+    const result = await generateShortGoalDescription(goal);
+    if (!result || !result.shortDescription) {
+      return res.status(500).json({ error: 'Failed to generate short goal description' });
+    }
 
-    const textContent = message.content.find(block => block.type === 'text');
-    res.json({ response: textContent ? textContent.text : 'No text response' });
-  } catch (error) {
-    console.error('Error calling Claude API:', error);
-    res.status(500).json({ error: 'Failed to get response from Claude' });
+    res.json(result);
+  } catch (error: any) {
+    console.error('Error in /api/get-short-goal:', error);
+    res.status(500).json({ error: error?.message || 'Failed to shorten goal' });
   }
 });
 
+
+app.post(
+  '/api/get-advanced-prompt',
+  async (
+    req: Request,
+    res: Response<AdvancedLearningPrompt | { error: string }>
+  ) => {
+    try {
+      const { prompt, goal } = req.body;
+
+      if (!prompt || !goal) {
+        return res.status(400).json({ error: 'Prompt and goal are required' });
+      }
+
+      const result = await generateAdvancedPrompt(goal, prompt);
+
+      if (!result || !result.prompt) {
+        return res
+          .status(500)
+          .json({ error: 'Failed to generate professional prompt' });
+      }
+
+      res.json( result );
+    } catch (error: any) {
+      console.error('Error in /api/get-professional-prompt:', error);
+      res
+        .status(500)
+        .json({ error: error?.message || 'Failed to generate prompt' });
+    }
+  }
+);
+
+// Start server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+}).on('error', (error) => {
+  console.error('❌ Failed to start server:', error);
 });

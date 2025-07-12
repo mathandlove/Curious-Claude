@@ -89,3 +89,22 @@
   white-space: pre-wrap;
   line-height: 1.5;
 }
+
+@keyframes pulsePlaceholder {
+  0% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.4;
+  }
+}
+
+/* Apply the pulse animation and make the placeholder stand out */
+.pulse-placeholder {
+  animation: pulsePlaceholder 1s infinite;
+  color: #f97316; /* Orange color for the placeholder */
+  font-style: italic;
+}

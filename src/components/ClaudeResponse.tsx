@@ -18,9 +18,10 @@ interface ClaudeResponseProps {
   showGoalSelector: boolean;
   onGoalSelected: (goal: string) => void;
   selectedGoal: string | null;
+  dynamicGoals?: string[];
 }
 
-export default function ClaudeResponse({ visible, conversation, showGoalPrompt, showGoalSelector, onGoalSelected, selectedGoal }: ClaudeResponseProps) {
+export default function ClaudeResponse({ visible, conversation, showGoalPrompt, showGoalSelector, onGoalSelected, selectedGoal, dynamicGoals }: ClaudeResponseProps) {
   if (!visible) return null;
 
   return (
@@ -36,7 +37,7 @@ export default function ClaudeResponse({ visible, conversation, showGoalPrompt, 
                 {index === 0 && (
                   <>
                     <UserGoalPrompt visible={showGoalPrompt} />
-                    <GoalSelector visible={showGoalSelector} onGoalSelected={onGoalSelected} />
+                    <GoalSelector visible={showGoalSelector} onGoalSelected={onGoalSelected} dynamicGoals={dynamicGoals} />
                     {/* Show goal badge only under the first user message after goal is selected */}
                     {selectedGoal && (
                       <div className="mb-6">
