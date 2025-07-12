@@ -3,8 +3,8 @@ import HeroPromptUI from '@/components/HeroPromptUI';
 import PromptForm from '@/components/PromptForm';
 import ClaudeResponse from '@/components/ClaudeResponse';
 import { postToClaude } from '@/api/claude';
-import { type ShortGoalDescription, type AnalyzePromptResponse,type ClaudeTextResponse, type AdvancedLearningPrompt } from '../../shared/claudeTypes';
-import type { Message } from '../../shared/messageTypes';
+import { type ShortGoalDescription, type AnalyzePromptResponse,type ClaudeTextResponse, type AdvancedLearningPrompt } from '../../backend/shared/claudeTypes';
+import type { Message } from '../../backend/shared/messageTypes';
 
 
 import { useScrollToBottom } from '@/hooks/useScrollToBottom';

@@ -12,16 +12,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
+// Load environment variables from .env files
+dotenv.config({ path: [ '.env'] });
+
 // Allowed origins for CORS
-const allowedOrigins = [
-  'https://curious-claude-8kzt36usl-elliott-hedmans-projects.vercel.app',
-  'http://localhost:5173' // Allow this for local development
-];
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? JSON.parse(process.env.ALLOWED_ORIGINS) :"";
 
+console.log(allowedOrigins);
 const app = express();
-
-// Load environment variables from .env
-dotenv.config();
 
 // JSON parsing middleware
 app.use(express.json());

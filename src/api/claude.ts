@@ -10,6 +10,8 @@ export async function postToClaude<TResponse>(
   route: string,
   body: Record<string, unknown>
 ): Promise<TResponse> {
+  console.log(import.meta.env.VITE_API_BASE_URL);
+
   const response = await fetch(`${API_BASE_URL}/api/${route}`, {
     method: 'POST',
     headers: {

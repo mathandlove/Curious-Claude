@@ -1,6 +1,6 @@
 // src/hooks/useFinalizeClaudeResponse.ts
 import { useEffect, useCallback } from 'react';
-import type { Message } from '../../shared/messageTypes';
+import type { Message } from '../../backend/shared/messageTypes';
 
 
 
