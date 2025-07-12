@@ -20,9 +20,15 @@ jobs:
           cache: 'pnpm'
 
       - name: Enable Corepack and install pnpm
+        shell: bash
         run: |
           corepack enable
           corepack prepare pnpm@latest --activate
+          echo "PNPM version:"
+          pnpm --version
+
+      - name: Add pnpm to PATH manually (if needed)
+        run: echo "${HOME}/.local/share/pnpm" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: pnpm install
