@@ -44,15 +44,16 @@ useFinalizeClaudeResponse({
   setShowSuggestionBanner,
 });
 
-
+//Only show the advanced prompt if it has been loaded, and the user has clicked "Try this prompt".
 useEffect(() => {
   if (tryPromptActivated && localAdvancedPrompt) {
     setAdvancedPrompt(localAdvancedPrompt);
   }
 }, [tryPromptActivated, localAdvancedPrompt]);
 
-  const handleTryPrompt = () => {
-    // This will be handled by PromptForm - we'll pass the suggested prompt to it
+  
+//When the user clickes "Try this prompt", "The banner is dismmised, and we showing a loading animation, only if the advanced prompt is still loading.
+const handleTryPrompt = () => {
     setTryPromptActivated(true);
     setShowSuggestionBanner(false); // Hide the banner after trying a prompt
     setBannerDismissed(true); // Mark banner as permanently dismissed
@@ -67,10 +68,15 @@ useEffect(() => {
     setBannerDismissed(true); // Mark banner as permanently dismissed
   };
 
+  //I did not have time to make a bookmarking feature, but I imagine a way for users to save and use prompts they learned later.
+  //This is a placeholder that could help with user interviews.
   const handleBookmark = (prompt: string) => {
     // Handle bookmarking logic here
     console.log('Bookmark prompt:', prompt);
   };
+
+  //After a goal is selected, we 1. minimize the goal selector, 2. get a shortened description of that goal for the banner
+  //3. Run a Backend call to get an advanced prompt (which takes more time),
 
 const handleGoalSelected = async (goal: string) => {
   setSelectedGoal(goal);
@@ -83,16 +89,10 @@ const handleGoalSelected = async (goal: string) => {
 
   setShortGoal(response.shortDescription);
 
-  // Optional: wait to reveal Claude response
+  // We show claude response after the call to Claude for better user flow and timing (could be placed at beginning)
   setReadyToShowClaudeResponse(true);
 
-  // Only generate advanced prompt if instructions are available
-  
-if (!instructions) {
-  console.warn("Instructions not yet available");
-  return;
-}
-
+//We do not show "loading" here as the user needs to click on "Try this prompt" before they can see we are loading.
 
 const response2 = await postToClaude<AdvancedLearningPrompt>('get-advanced-prompt', {
   goal,
@@ -105,6 +105,7 @@ setLoadingAdvancedPrompt(false);
 
 };
 
+//The first submit triggers the showing a goal, but future submits mimic a chat conversation with Claude.
 
 const handleSubmit = async (submittedPrompt: string) => {
   setIsSubmitted(true);
@@ -123,7 +124,7 @@ const handleSubmit = async (submittedPrompt: string) => {
     isThinking: true,
   };
 
-  // Use functional update to avoid stale state
+//Keeps history of conversation in conversation
   setConversation(prev => [...prev, userMessage, claudeMessage]);
 
   // Store this before state updates
@@ -132,6 +133,9 @@ const handleSubmit = async (submittedPrompt: string) => {
   // Analyze prompt (only on first prompt)
   if (isFirstPrompt) {
     try {
+
+      //Looks for what learning goals the user has, and returns a list of 3 goals, and what the user actually requested in their instructions to be referenced in the advanced prompt.
+      //TODO: This prompt works alright but I would like to do user research to understand what Learning Goals users resonate with rather than what Claude picks up.
 const response = await postToClaude<AnalyzePromptResponse>('analyze-prompt', {
   prompt: submittedPrompt,
 });
@@ -149,11 +153,12 @@ const response = await postToClaude<AnalyzePromptResponse>('analyze-prompt', {
   }
 
   // Call Claude API to generate a response
+  //TODO: This can be ran in parallel, but for for ease of prototyping was left sequential.
   try {
     let response: ClaudeTextResponse;
     
     if (isFirstPrompt) {
-      // For first prompt, use single prompt endpoint
+
       response = await postToClaude<ClaudeTextResponse>('claude', {
         prompt: submittedPrompt,
       });

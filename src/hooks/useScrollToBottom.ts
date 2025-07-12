@@ -1,5 +1,7 @@
-// src/hooks/useScrollToBottom.ts
+
 import { useEffect } from 'react';
+
+//Whenever the conversation or showSuggestionBanner changes, we want to scroll to the bottom of the message container.
 
 export function useScrollToBottom(
   ref: React.RefObject<HTMLDivElement | null>, 
@@ -12,6 +14,6 @@ export function useScrollToBottom(
         behavior: 'smooth',
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [ref, ...deps]);
 }

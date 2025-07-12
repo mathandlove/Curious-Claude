@@ -1,3 +1,4 @@
+// === Dependencies ===
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -8,24 +9,28 @@ import type { Message } from '../shared/messageTypes.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// ES module compatibility: recreate __dirname for file path operations This was required with backend in the same source file.
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 
-// Load environment variables from .env files
+
 dotenv.config({ path: [ '.env'] });
 
-// Allowed origins for CORS
-const allowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? JSON.parse(process.env.ALLOWED_ORIGINS) :"";
+// Parse comma-separated origins from env or use localhost fallback
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+  : [''];
 
-console.log(allowedOrigins);
 const app = express();
 
+// === Middleware ===
 // JSON parsing middleware
 app.use(express.json());
 
-// CORS configuration
+
+console.log('Allowed Origins:', allowedOrigins);
+// CORS configuration - allow requests from specified origins
 app.use(cors({
   origin: allowedOrigins,
   methods: ['GET', 'POST'],
@@ -33,12 +38,13 @@ app.use(cors({
 }));
 
 
-// Health check endpoint
+// === API Endpoints ===
+// Health check endpoint for monitoring service status
 app.get('/health', (_req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Basic Claude completion endpoint
+// Basic Claude completion endpoint - single prompt to response
 app.post(
   '/api/claude',
   async (
@@ -48,14 +54,15 @@ app.post(
     try {
       const { prompt } = req.body;
 
+      // Validate required prompt parameter
       if (!prompt) {
         return res.status(400).json({ error: 'Prompt is required' });
       }
 
+      // Generate Claude response
       const result = await generateResponse(prompt);
 
-      // ✅ Align with ClaudeTextResponse { content: string }
-    res.json(result);
+      res.json(result);
     } catch (error: unknown) {
       console.error('Error in /api/claude:', error);
       const message = error instanceof Error ? error.message : 'Failed to get response from Claude';
@@ -64,7 +71,7 @@ app.post(
   }
 );
 
-// Conversation-based Claude completion endpoint
+// Conversation-based Claude completion endpoint - maintains chat history context
 app.post(
   '/api/claude-conversation',
   async (
@@ -74,10 +81,12 @@ app.post(
     try {
       const { conversation } = req.body;
 
+
       if (!conversation || !Array.isArray(conversation) || conversation.length === 0) {
         return res.status(400).json({ error: 'Conversation array is required' });
       }
 
+      // Generate response with conversation context
       const result = await generateResponseWithConversation(conversation);
       res.json(result);
     } catch (error: unknown) {
@@ -88,7 +97,7 @@ app.post(
   }
 );
 
-//passes in prompt and returns external content and 3 goals
+// Analyze prompt and return external content with 3 learning goals
 app.post(
   '/api/analyze-prompt',
   async (
@@ -98,10 +107,12 @@ app.post(
     try {
       const { prompt } = req.body;
 
+
       if (!prompt) {
         return res.status(400).json({ error: 'Prompt is required' });
       }
 
+      // Extract learning goals and external content from user prompt
       const result = await getInstructionsAnd3GoalsFromPrompt(prompt);
       res.json(result);
     } catch (error: unknown) {
@@ -112,15 +123,25 @@ app.post(
   }
 );
 
-app.post('/api/get-short-goal', async (req: Request, res: Response<ShortGoalDescription | { error: string }>) => {
+// Generate shortened goal description for UI display
+app.post(
+  '/api/get-short-goal',
+  async (
+    req: Request<unknown, ShortGoalDescription, { goal?: string }>,
+    res: Response<ShortGoalDescription | { error: string }>
+  ) => {
   try {
     const { goal } = req.body;
+
 
     if (!goal) {
       return res.status(400).json({ error: 'Goal is required' });
     }
 
+    // Generate concise version of the goal for display purposes
     const result = await generateShortGoalDescription(goal);
+    
+    // Validate result has required shortDescription field
     if (!result || !result.shortDescription) {
       return res.status(500).json({ error: 'Failed to generate short goal description' });
     }
@@ -134,6 +155,7 @@ app.post('/api/get-short-goal', async (req: Request, res: Response<ShortGoalDesc
 });
 
 
+// Generate advanced learning prompt from basic prompt and goal
 app.post(
   '/api/get-advanced-prompt',
   async (
@@ -143,30 +165,35 @@ app.post(
     try {
       const { prompt, goal } = req.body;
 
+      // Validate both prompt and goal are provided
       if (!prompt || !goal) {
         return res.status(400).json({ error: 'Prompt and goal are required' });
       }
 
+      // Transform basic prompt into sophisticated learning prompt
       const result = await generateAdvancedPrompt(goal, prompt);
 
+      // Ensure generated prompt is valid before returning
       if (!result || !result.prompt) {
         return res
           .status(500)
           .json({ error: 'Failed to generate professional prompt' });
       }
 
-      res.json( result );
+      res.json(result);
     } catch (error: unknown) {
-      console.error('Error in /api/get-professional-prompt:', error);
+      console.error('Error in /api/get-advanced-prompt:', error);
       const message = error instanceof Error ? error.message : 'Failed to generate prompt';
       res.status(500).json({ error: message });
     }
   }
 );
 
+// === Server Startup ===
+// Server configuration: use PORT env var or default to 3001
 const PORT = Number(process.env.PORT) || 3001;
 
-// Start server
+// Start server with error handling
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 }).on('error', (error) => {
