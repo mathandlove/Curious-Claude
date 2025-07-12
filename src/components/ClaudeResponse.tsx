@@ -36,8 +36,11 @@ export default function ClaudeResponse({ visible, conversation, showGoalPrompt, 
                 <UserPrompt prompt={message.content} />
                 {index === 0 && (
                   <>
+                    <div className="max-w-md text-sm px-4">
                     <UserGoalPrompt visible={showGoalPrompt} />
+
                     <GoalSelector visible={showGoalSelector} onGoalSelected={onGoalSelected} dynamicGoals={dynamicGoals} />
+                    </div>
                     {/* Show goal badge only under the first user message after goal is selected */}
                     {selectedGoal && (
                       <div className="mb-6">

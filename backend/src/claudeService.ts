@@ -205,7 +205,7 @@ export async function generateResponseWithConversation(conversation: Message[]):
     }
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
+      model: 'claude-sonnet-4-20250514',
       max_tokens: 1024,
       messages: anthropicMessages,
     });

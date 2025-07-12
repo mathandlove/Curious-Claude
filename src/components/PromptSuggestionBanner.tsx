@@ -24,13 +24,12 @@ export default function PromptSuggestionBanner({
   };
 
  return (
-    <div
-      className={`transition-all duration-500 ease-in-out transform max-w-4xl mx-auto mr-[5%] ${
-        visible
-          ? 'opacity-100 scale-100 translate-y-4'
-          : 'opacity-0 scale-95 translate-y-10 pointer-events-none'
-      }`}
-    >
+<div
+  className={`absolute left-0 w-full max-w-4xl mx-auto transition-transform duration-500 ease-in-out
+    ${visible ? 'translate-y-[20%] opacity-100' : 'translate-y-[100%] opacity-0 pointer-events-none'}
+  `}
+  style={{ bottom: '00' }}
+>
       <div className="rounded-lg bg-[#2a2a2a] px-4 py-3 shadow-md w-full max-w-2xl mx-auto">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           {/* Prompt Text */}

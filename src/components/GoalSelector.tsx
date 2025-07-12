@@ -40,7 +40,7 @@ const handleCustomGoalSubmit = (e: React.FormEvent) => {
   if (isCollapsed) {
     return (
       <div className="mb-6 transition-all duration-1000 ease-in-out">
-        <div className="w-full max-w-3xl mx-auto">
+        <div className="w-full ">
           <div className="rounded-xl bg-[#7c4a3f] text-white px-4 py-3 text-base font-medium shadow">
             🎯 Learning Goal: {selectedGoal === "custom" ? customGoal : selectedGoal}
           </div>
@@ -60,7 +60,7 @@ const handleCustomGoalSubmit = (e: React.FormEvent) => {
               <button
                 key={index}
                 onClick={() => handleGoalSelect(goal)}
-                className={`w-[75%] text-left px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 shadow-sm
+                className={`w-full text-left px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 shadow-sm
                   ${
                     selectedGoal === goal
                       ? 'bg-[#7c4a3f] text-white'
@@ -73,7 +73,7 @@ const handleCustomGoalSubmit = (e: React.FormEvent) => {
 
             <button
               onClick={handleCustomGoalSelect}
-              className={`w-[75%] text-left px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 shadow-sm
+              className={`w-full text-left px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 shadow-sm
                 ${
                   selectedGoal === "custom"
                     ? 'bg-[#7c4a3f] text-white'
