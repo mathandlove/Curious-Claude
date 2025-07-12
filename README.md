@@ -3,7 +3,7 @@ Thank you for taking the time to review my code for Curious Claude. I built this
 
 Want a Quick Overview?
 If you don’t feel like reading, I’ve summarized everything in under 5 minutes in this video:
-https://www.youtube.com/watch?v=gSjxwMYORI0
+https://youtu.be/J6O77sbyc3U
 
 A Few Things to Know:
 I pride myself on creating quick, effective prototypes. However, this is not your typical "testable prototype."
