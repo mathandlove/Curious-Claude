@@ -193,10 +193,10 @@ const response = await postToClaude<AnalyzePromptResponse>('analyze-prompt', {
 
     {/* Claude Response - fills space above form when submitted */}
     {isSubmitted && (
-      <div
-        ref={scrollContainerRef}
-        className="absolute top-0 left-0 right-0 bottom-0 overflow-y-auto"
-      >
+<div
+  ref={scrollContainerRef}
+  className="absolute top-0 left-0 md:left-20 right-0 bottom-0 overflow-y-auto"
+>
         <div className="pb-32">
           <ClaudeResponse
             visible={isSubmitted}
