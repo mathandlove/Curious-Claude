@@ -93,7 +93,6 @@ if (!instructions) {
   return;
 }
 
-setLoadingAdvancedPrompt(true);
 
 const response2 = await postToClaude<AdvancedLearningPrompt>('get-advanced-prompt', {
   goal,
