@@ -2,41 +2,40 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
-import { generateResponse, generateResponseWithConversation, generateShortGoalDescription, getInstructionsAnd3GoalsFromPrompt, generateAdvancedPrompt } from './claudeService';
-import type { AdvancedLearningPrompt, AnalyzePromptResponse, ClaudeTextResponse, ShortGoalDescription } from '../../shared/claudeTypes';
-import type { Message } from '../../shared/messageTypes';  
+import { generateResponse, generateResponseWithConversation, generateShortGoalDescription, getInstructionsAnd3GoalsFromPrompt, generateAdvancedPrompt } from './claudeService.js';
+import type { AdvancedLearningPrompt, AnalyzePromptResponse, ClaudeTextResponse, ShortGoalDescription } from '../shared/claudeTypes.js';
+import type { Message } from '../shared/messageTypes.js';  
 import path from 'path';
 
+
+// Allowed origins for CORS
 const allowedOrigins = [
   'https://curious-claude-8kzt36usl-elliott-hedmans-projects.vercel.app',
-  'http://localhost:5173' // optional, for local dev
+  'http://localhost:5173' // Allow this for local development
 ];
 
-
-
-
 const app = express();
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
-  app.get('*', (_, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
-  });
-}
 
+// Load environment variables from .env
+dotenv.config();
 
+// JSON parsing middleware
+app.use(express.json());
+
+// CORS configuration
 app.use(cors({
   origin: allowedOrigins,
   methods: ['GET', 'POST'],
   credentials: true
 }));
 
-dotenv.config();
-
-
-const PORT = Number(process.env.PORT) || 3001;
-
-app.use(cors());
-app.use(express.json());
+// Serve frontend in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (_, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
+}
 
 // Health check endpoint
 app.get('/health', (_req, res) => {
@@ -168,6 +167,8 @@ app.post(
     }
   }
 );
+
+const PORT = Number(process.env.PORT) || 3001;
 
 // Start server
 app.listen(PORT, () => {

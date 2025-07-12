@@ -3,18 +3,12 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "node",
-
-    // ✅ Allow importing files from the root project (e.g. shared/)
-    "rootDir": "../",
-
-    // ✅ Compiled files still go into backend/dist
+    "rootDir": ".",  // Update rootDir to include everything
     "outDir": "./dist",
-
-    "baseUrl": "../", // ✅ allows path mapping from project root
+    "baseUrl": "./",  // Keep baseUrl as current folder
     "paths": {
-      "@shared/*": ["shared/*"] // ✅ alias for clean imports
+      "@shared/*": ["shared/*"]  // Adjust path to point to shared directory
     },
-
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -24,9 +18,12 @@
     "declarationMap": true,
     "sourceMap": true
   },
-
-  // ✅ Include backend source + allow shared/
-  "include": ["src/**/*", "../shared/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": [
+    "src/**/*",
+    "shared/**/*"  // Make sure shared is included in the build
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
-

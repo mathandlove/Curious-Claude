@@ -3,8 +3,8 @@ import type {
   AdvancedLearningPrompt,
   ShortGoalDescription,
   ClaudeTextResponse,
-} from '../../shared/claudeTypes';
-import type { Message } from '../../shared/messageTypes';
+} from '../shared/claudeTypes';
+import type { Message } from '../shared/messageTypes';
 import Anthropic from '@anthropic-ai/sdk';
 import dotenv from 'dotenv';
 
