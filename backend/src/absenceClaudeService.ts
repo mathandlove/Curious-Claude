@@ -3,6 +3,19 @@ import type { Message } from '../shared/messageTypes';
 import Anthropic from '@anthropic-ai/sdk';
 import dotenv from 'dotenv';
 
+interface PolicyOption {
+  title: string;
+  actionType: 'form' | 'request';
+  description: string;
+  keyBenefits?: string[];
+  eligibilityRequirements?: string[];
+  requestEndpoint?: string;
+  jurisdiction: 'federal' | 'state' | 'company';
+  confidence: 'high' | 'medium' | 'low';
+  citations: string[];
+  rationale: string;
+}
+
 dotenv.config();
 
 const ABSENCE_MODEL_STR = 'claude-sonnet-4-20250514';
@@ -217,7 +230,7 @@ For now, assume the company is "Google" and the location is "CA" unless otherwis
   };
 }
 
-export async function generateClarifyingQuestions(policyOptions: any[]): Promise<ClaudeTextResponse> {
+export async function generateClarifyingQuestions(policyOptions: PolicyOption[]): Promise<ClaudeTextResponse> {
   try {
     const response = await anthropic.messages.create({
       model: ABSENCE_MODEL_STR,
@@ -289,7 +302,7 @@ Do not recommend a policy yet — your job is only to generate the most useful q
   }
 }
 
-export async function generatePolicyRecommendation(policyOptions: any[], answers: Record<string, string>): Promise<ClaudeTextResponse> {
+export async function generatePolicyRecommendation(policyOptions: PolicyOption[], answers: Record<string, string>): Promise<ClaudeTextResponse> {
   try {
     console.log('generatePolicyRecommendation called with:', { 
       policiesCount: policyOptions.length, 
@@ -501,7 +514,7 @@ export async function getAllPolicyOptions(userRequest: string): Promise<ClaudeTe
       getCompanyPolicy(userRequest)
     ]);
     
-    let federalStatePolicies = [];
+    let federalStatePolicies: PolicyOption[] = [];
     try {
       const parsedFederalState = JSON.parse(federalStateResult.content.replace(/```json\n?|\n?```/g, ''));
       federalStatePolicies = parsedFederalState.policyOptions || [];
@@ -510,7 +523,7 @@ export async function getAllPolicyOptions(userRequest: string): Promise<ClaudeTe
       console.error('Error parsing federal/state policies:', parseError);
     }
 
-    let companyPolicies = [];
+    let companyPolicies: PolicyOption[] = [];
     try {
       const parsedCompany = JSON.parse(companyPolicyResult.content.replace(/```json\n?|\n?```/g, ''));
       companyPolicies = [parsedCompany]; // Single company policy
