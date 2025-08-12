@@ -8,6 +8,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/curious" element={<CuriousClaude />} />
+      <Route path="/absence" element={<AbsenceNavigator />} />
       <Route path="/absense" element={<AbsenceNavigator />} />
     </Routes>
   );
