@@ -1,0 +1,108 @@
+import Anthropic from '@anthropic-ai/sdk';
+import dotenv from 'dotenv';
+import { text } from 'stream/consumers';
+import type { MessageParam, ToolUseBlock,ToolResultBlockParam,ContentBlock } from '@anthropic-ai/sdk/resources/messages';
+
+dotenv.config();
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY || '',
+});
+
+async function run(): Promise<Anthropic.Messages.Message> {
+  const response = await anthropic.messages.create({
+    model: 'claude-3-haiku-20240307', // or claude-3-sonnet-20240229
+    max_tokens: 500,
+    messages: [
+      {
+        role: 'user',
+        content: 'Tell me a silly joke about penguins.',
+      },
+    ],
+  });
+
+  return response;
+}
+
+
+async function callClaude(messages:Anthropic.Messages.MessageParam[]): Promise<Anthropic.Messages.Message> {
+  const response = await anthropic.messages.create({
+    model: 'claude-3-haiku-20240307', // or claude-3-sonnet-20240229
+    max_tokens: 500,
+    messages: messages,
+    tools:[
+  {
+    "name": "get_weather",
+    "description": "Get the current weather in a specific location",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "location": {
+          "type": "string",
+          "description": "The select location of the weather."
+        }
+      },
+      "required": ["location"]
+    }
+  }
+]
+  });
+
+  return response;
+}
+
+//run().catch((err) => {
+//  console.error('Error:', err);
+//});
+
+function isToolUseBlock(block:Anthropic.Messages.ContentBlock):block is Anthropic.Messages.ToolUseBlock{
+  if(block.type=="tool_use"){
+    return true;
+  }
+  return false;
+}
+
+function getToolUseBlocks(response:Anthropic.Messages.Message):Anthropic.Messages.ToolUseBlock[]{
+  const toolUseBlocks:Anthropic.Messages.ToolUseBlock[]=response.content.filter(isToolUseBlock) 
+  return toolUseBlocks;
+}
+
+async function get_weather(location:string){
+  return "Demons are in the sky again."
+}
+
+async function getToolResultBlocks(blocks:Anthropic.Messages.ToolUseBlock[]):Promise<ToolResultBlockParam[]>{
+  //todo Make sure we call the right function
+
+  const allResponses:ToolResultBlockParam[]=[];
+  for(const block of blocks)
+    {
+      const input=block.input as {location:string};
+      const response = await get_weather(input.location);
+      const message:ToolResultBlockParam = {tool_use_id:block.id,type: 'tool_result',content:response}
+      allResponses.push(message);
+    }
+  return allResponses;
+}
+
+async function main(){
+  const messages: Anthropic.Messages.MessageParam[] = [];
+  const newMessage:Anthropic.Messages.MessageParam = {role:"user",content:"What is the weather like in Boulder, CO?"};
+  messages.push(newMessage);
+
+  let toolResultBlocks:ToolResultBlockParam[]=[];
+  do{
+  const response= await callClaude(messages);
+  const newMessage3:Anthropic.Messages.MessageParam={role:"assistant",content:response.content};
+  messages.push(newMessage3);
+  const toolUseBlocks = getToolUseBlocks(response);
+  toolResultBlocks = await getToolResultBlocks(toolUseBlocks);
+  const newMessage2:Anthropic.Messages.MessageParam = {role:"user",content:toolResultBlocks};
+  messages.push(newMessage2);
+
+  }
+  while(toolResultBlocks.length>0)
+  console.dir(messages, { depth: null })
+
+}
+main();
