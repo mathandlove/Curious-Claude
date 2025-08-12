@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { vi, beforeEach } from 'vitest'
 
 // Mock API calls
 global.fetch = vi.fn()

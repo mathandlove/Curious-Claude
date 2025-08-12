@@ -146,7 +146,7 @@ describe('Claude API', () => {
     )
 
     const result = await postToClaude('claude', { prompt: 'Test' })
-    expect(result.content).toBe('Delayed response')
+    expect((result as any).content).toBe('Delayed response')
   })
 
   it('handles malformed JSON responses', async () => {

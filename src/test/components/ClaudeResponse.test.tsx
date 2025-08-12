@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import ClaudeResponse from '@/components/ClaudeResponse'
@@ -178,7 +178,7 @@ describe('ClaudeResponse Component', () => {
       },
       {
         id: '3',
-        type: 'system',
+        type: 'claude',
         content: 'System message'
       }
     ]
@@ -193,7 +193,7 @@ describe('ClaudeResponse Component', () => {
   it('handles long conversations correctly', () => {
     const longConversation: Message[] = Array.from({ length: 20 }, (_, i) => ({
       id: i.toString(),
-      type: i % 2 === 0 ? 'user' : 'claude',
+      type: i % 2 === 0 ? 'user' as const : 'claude' as const,
       content: `Message ${i}`,
       isThinking: false
     }))
@@ -209,11 +209,11 @@ describe('ClaudeResponse Component', () => {
     const { rerender } = render(<ClaudeResponse {...defaultProps} />)
     
     // Add new message and check scroll behavior
-    const updatedConversation = [
+    const updatedConversation: Message[] = [
       ...mockConversation,
       {
         id: '3',
-        type: 'claude',
+        type: 'claude' as const,
         content: 'New message',
         isThinking: false
       }
@@ -256,11 +256,11 @@ describe('ClaudeResponse Component', () => {
     
     // Simulate rapid updates
     for (let i = 0; i < 5; i++) {
-      const updatedConversation = [
+      const updatedConversation: Message[] = [
         ...mockConversation,
         {
           id: `rapid-${i}`,
-          type: 'claude',
+          type: 'claude' as const,
           content: `Rapid update ${i}`,
           isThinking: false
         }

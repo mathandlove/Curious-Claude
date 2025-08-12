@@ -1,11 +1,6 @@
 import { useState } from 'react';
 import { Check, FileText, Send, Info, ChevronDown, ChevronUp } from 'lucide-react';
 
-interface PolicyForm {
-  name: string;
-  id?: string;
-  url?: string;
-}
 
 interface PolicyOptionData {
   title: string;
@@ -39,7 +34,7 @@ const confidenceColors = {
   low: 'text-red-600'
 };
 
-export default function PolicyOption({ option, isSelected = false, onSelect, onViewForm }: PolicyOptionProps) {
+export default function PolicyOption({ option, onSelect }: PolicyOptionProps) {
   const [showDetails, setShowDetails] = useState(false);
 
   return (

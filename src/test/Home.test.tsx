@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Home from '@/pages/Home'
 
@@ -62,7 +62,7 @@ describe('Home Component', () => {
     await user.type(textarea, 'Tell me about React testing')
     
     // Submit the form
-    const submitButton = screen.getByRole('button', { type: 'submit' })
+    const submitButton = screen.getByRole('button', { name: /submit|send/i })
     await user.click(submitButton)
 
     // Wait for state updates
@@ -104,7 +104,7 @@ describe('Home Component', () => {
     const textarea = screen.getByRole('textbox')
     await user.type(textarea, 'I want to learn testing')
     
-    const submitButton = screen.getByRole('button', { type: 'submit' })
+    const submitButton = screen.getByRole('button', { name: /submit|send/i })
     await user.click(submitButton)
 
     // Wait for goal selector to appear and select a goal
@@ -129,7 +129,7 @@ describe('Home Component', () => {
     const textarea = screen.getByRole('textbox')
     await user.type(textarea, 'Test prompt that will fail')
     
-    const submitButton = screen.getByRole('button', { type: 'submit' })
+    const submitButton = screen.getByRole('button', { name: /submit|send/i })
     await user.click(submitButton)
 
     // Wait for error handling
@@ -167,7 +167,7 @@ describe('Home Component', () => {
     const textarea = screen.getByRole('textbox')
     await user.type(textarea, 'Initial question')
     
-    const submitButton = screen.getByRole('button', { type: 'submit' })
+    const submitButton = screen.getByRole('button', { name: /submit|send/i })
     await user.click(submitButton)
 
     await waitFor(() => {
@@ -202,7 +202,7 @@ describe('Home Component', () => {
     const textarea = screen.getByRole('textbox')
     await user.type(textarea, 'Test loading state')
     
-    const submitButton = screen.getByRole('button', { type: 'submit' })
+    const submitButton = screen.getByRole('button', { name: /submit|send/i })
     await user.click(submitButton)
 
     // Check that loading state is active
@@ -212,9 +212,7 @@ describe('Home Component', () => {
     })
   })
 
-  it('handles banner interactions', async () => {
-    const user = userEvent.setup()
-    
+  it('handles banner interactions', () => {
     render(<Home />)
     
     // This test would need to trigger the banner show state
@@ -258,7 +256,7 @@ describe('Home Component', () => {
     const textarea = screen.getByRole('textbox')
     await user.type(textarea, 'Test advanced prompt loading')
     
-    const submitButton = screen.getByRole('button', { type: 'submit' })
+    const submitButton = screen.getByRole('button', { name: /submit|send/i })
     await user.click(submitButton)
 
     await waitFor(() => {
