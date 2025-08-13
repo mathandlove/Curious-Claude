@@ -81,7 +81,6 @@ If there is no external content, return an empty string for "external". Do not u
   }
 }
 
-
 export async function get3GoalsFromInstructions(prompt: string): Promise<string[]> {
   try {
     const response = await anthropic.messages.create({

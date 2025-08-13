@@ -31,4 +31,22 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* iPhone safe area support */
+  @supports (padding: max(0px)) {
+    .safe-area-bottom {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+  }
+
+  /* Mobile viewport adjustments */
+  @media (max-width: 640px) {
+    html {
+      font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    input, textarea {
+      font-size: 16px; /* Prevent zoom on iOS */
+    }
+  }
 }

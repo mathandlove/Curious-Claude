@@ -201,9 +201,10 @@ const response = await postToClaude<AnalyzePromptResponse>('analyze-prompt', {
     {isSubmitted && (
 <div
   ref={scrollContainerRef}
-  className="absolute top-0 left-0 md:left-20 right-0 bottom-0 overflow-y-auto"
+  className="absolute top-0 left-0 right-0 bottom-0 overflow-y-auto"
+  style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
 >
-        <div className="pb-32">
+        <div className="pb-32 px-4 sm:px-6">
           <ClaudeResponse
             visible={isSubmitted}
             conversation={conversation}
@@ -219,14 +220,15 @@ const response = await postToClaude<AnalyzePromptResponse>('analyze-prompt', {
 
     {/* Prompt Form - fixed to bottom of screen */}
 <div
-  className={`fixed left-0 right-0 transition-all duration-1000 ease-in-out flex justify-center px-6 z-20`}
+  className={`fixed left-0 right-0 transition-all duration-1000 ease-in-out flex justify-center px-3 sm:px-6 z-20`}
   style={{
-    bottom: isSubmitted ? '0vh' : '15vh', // was 40vh
+    bottom: isSubmitted ? 'env(safe-area-inset-bottom, 0px)' : '15vh',
     alignItems: isSubmitted ? 'flex-end' : 'center',
     overflow: 'visible',
+    paddingBottom: isSubmitted ? '1rem' : '0',
   }}
 >
-      <div className="w-full max-w-sm sm:max-w-3xl mx-auto px-4 sm:px-6">
+      <div className="w-full max-w-full sm:max-w-3xl mx-auto">
         <PromptForm
           onSubmit={handleSubmit}
           loading={loading}

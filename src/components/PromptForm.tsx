@@ -68,7 +68,7 @@ return (
   <div className="w-full max-w-3xl mx-auto relative">
     
     {/* Banner positioned just above the prompt input */}
-    <div className="absolute bottom-full mb-3 left-0 right-0 z-0">
+    <div className="absolute bottom-full mb-3 left-0 right-0 z-0 px-2 sm:px-0">
       <PromptSuggestionBanner
         visible={showSuggestionBanner}
         learningGoal={learningGoal}
@@ -80,9 +80,9 @@ return (
 
     {/* Prompt input form */}
     <form onSubmit={handleSubmit} className="relative z-10">
-      <div className="rounded-xl bg-[#2a2a2a] border border-muted/30 p-4 flex items-center gap-3 text-muted-foreground shadow-lg">
+      <div className="rounded-xl bg-[#2a2a2a] border border-muted/30 p-3 sm:p-4 flex items-center gap-2 sm:gap-3 text-muted-foreground shadow-lg">
         {/* Input Field */}
-        <div className="flex-1">
+        <div className="flex-1 min-w-0">
           <Input
             type="text"
             value={prompt}
@@ -93,19 +93,19 @@ return (
                 : 'How can I help you today?'
             }
             disabled={loading || loadingAdvancedPrompt}
-            className={`w-full bg-[#2a2a2a] text-white placeholder:text-[#999] rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#7c4a3f] border-none ${
+            className={`w-full bg-[#2a2a2a] text-white placeholder:text-[#999] rounded-md px-3 py-3 sm:py-2 text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#7c4a3f] border-none ${
               loadingAdvancedPrompt ? 'pulse-placeholder' : ''
             }`}
           />
         </div>
 
         {/* Buttons */}
-        <div className="flex gap-2">
+        <div className="flex gap-1 sm:gap-2 flex-shrink-0">
           {!isAtBottom && (
             <Button
               type="button"
               onClick={handleRandomPrompt}
-              className="bg-[#7c4a3f] hover:bg-[#92574a] rounded-lg p-3 text-white shadow-md"
+              className="bg-[#7c4a3f] hover:bg-[#92574a] rounded-lg p-3 text-white shadow-md min-h-[44px] min-w-[44px]"
             >
               <Dices className="h-4 w-4" />
             </Button>
@@ -113,7 +113,7 @@ return (
           <Button
             type="submit"
             disabled={loading || !prompt.trim() || loadingAdvancedPrompt}
-            className="bg-[#7c4a3f] hover:bg-[#92574a] rounded-lg p-3 text-white shadow-md"
+            className="bg-[#7c4a3f] hover:bg-[#92574a] rounded-lg p-3 text-white shadow-md min-h-[44px] min-w-[44px]"
           >
             <ArrowUp className="h-4 w-4" />
           </Button>
